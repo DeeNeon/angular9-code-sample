@@ -1,0 +1,237 @@
+<section class="wrapper">
+
+  <!--SignUP Form-->
+  <div class="signup animated fadeInDown" *ngIf="registerStep === SIGNUP">
+    <article class="form-wrapper d-flex justify-content-around">
+      <div class="text-left d-flex flex-column col-4 pr-5">
+        <img [src]="logoURL" class="logo-style"/>
+        <h4 class="description larger-font">{{belowLogoMsg}}</h4>
+      </div>
+      <div class="signup-content d-flex flex-column col-8">
+        <h1 class="extra-larger-font">Get Started</h1>
+        <span class="text-danger mb-4">* Required Fields</span>
+
+        <form name="form" #f="ngForm" autocomplete="off" novalidate class="margin-bottom-0">
+
+          <div class="d-flex justify-content-between required">
+            <div class="form-group w-100">
+              <input class="form-control form-control-lg" name="merchant_name" [(ngModel)]="post.merchant_name" #merchant_name="ngModel" placeholder="Company Name" required/>
+              <span *ngIf="f.submitted && !merchant_name.valid" class="text-danger">Company name is required</span>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between required">
+            <div class="form-group w-50 pr-2 required">
+              <input class="form-control form-control-lg" type="search" [ngModelOptions]="{standalone: true}" [(ngModel)]="post.account.first_name" #first_name="ngModel" placeholder="First Name" required/>
+              <span *ngIf="f.submitted && !first_name.valid" class="text-danger">First name is required</span>
+            </div>
+            <div class="form-group w-50">
+              <input class="form-control form-control-lg" [ngModelOptions]="{standalone: true}" type="search" [(ngModel)]="post.account.last_name" #last_name="ngModel" placeholder="Last Name" required/>
+              <span *ngIf="f.submitted && !last_name.valid" class="text-danger">Last name is required</span>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between required">
+            <div class="form-group w-50 pr-2 required">
+              <international-phone-number
+                #telephone="ngModel"
+                class="w-50" name="phone"
+                placeholder="Telephone"
+                [(ngModel)]="post.profile.telephone"
+                locale="en"
+                required
+                [pattern]="phoneRe">
+              </international-phone-number>
+              <span *ngIf="f.submitted && !telephone.valid" class="text-danger">Enter numbers only</span>
+            </div>
+            <div class="form-group w-50">
+              <input class="form-control form-control-lg" type="search" [ngModelOptions]="{standalone: true}" [(ngModel)]="post.account.email" #email="ngModel" placeholder="Email" email="true" required/>
+              <span *ngIf="f.submitted && !email.valid" class="text-danger">Email is required</span>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end">
+            <div class="text-capitalize select-all custom-control custom-checkbox">
+              <input id="gdpr" class="custom-control-input" type="checkbox" value="true" [(ngModel)]="post.is_gdpr" name="gdpr">
+              <label for="gdpr" class="custom-control-label">Do you require GDPR compliance?</label>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between bottom align-items-center">
+            <div class="text-capitalize select-all custom-control custom-checkbox">
+              <input id="terms" class="custom-control-input" required type="checkbox" value="true" [(ngModel)]="terms" name="terms">
+              <label for="terms" class="custom-control-label"><a [href]="termsUrl" target="_blank">Agree to Terms and Conditions</a></label>
+            </div>
+            <app-fa-save-btn
+              class="col-5"
+              saveButtonName="create account"
+              [saveButtonBlock]="true"
+              [customHeight]="true"
+              heightValue="45px"
+              [setDisable]="loading || !(terms && f.valid)"
+              [isLoading]="loading"
+              (onSave)="signup(f)">
+            </app-fa-save-btn>
+          </div>
+          <div *ngIf="f.submitted && !terms" class="text-danger">Terms of Service are required.</div>
+          <div *ngIf="errorMsg" class="text-danger mt-4 text-center" [innerHTML]="errorMsg"></div>
+        </form>
+      </div>
+    </article>
+  </div>
+
+  <!--Tell us more form-->
+  <div class="signup animated fadeInDown update-form" *ngIf="registerStep === UPDATE">
+    <article class="form-wrapper row">
+      <div class="text-left d-flex flex-column col-4 pr-5">
+        <img [src]="logoURL" class="logo-style"/>
+        <h4 class="description">{{belowLogoMsg}}</h4>
+      </div>
+      <div class="signup-content d-flex flex-column col-8">
+        <h1 class="extra-larger-font font-weight-light">Tell Us a Little About Yourself</h1>
+        <span class="text-danger mb-4">* Required Fields</span>
+        <h5 class="mb-3 large-font">
+          Please answer a few questions, so we can tailor software better.
+        </h5>
+        <form name="form"
+              #f="ngForm"
+              class="mb-0">
+          <div class="d-flex justify-content-between required">
+            <div class="form-group w-100">
+              <input type="text" [(ngModel)]="put.profile.url" #url="ngModel" name="website" class="form-control" aria-describedby="Website" placeholder="Website" required>
+              <label class="text-danger" *ngIf="f.submitted && !url.valid">Company Website URL is required.</label>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <div class="form-group w-100">
+              <textarea appTextarea rows="4" [(ngModel)]="put.profile.description" #description="ngModel" name="description" class="form-control" aria-describedby="Enter Description" placeholder="Enter Description"></textarea>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between required">
+            <div class="form-group w-100">
+              <input type="text" [(ngModel)]="put.profile.street" #street="ngModel" name="street" class="form-control" aria-describedby="Enter address" placeholder="Enter Address" required>
+              <label class="text-danger" *ngIf="f.submitted && !street.valid">Address is required.</label>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between required">
+            <div class="form-group w-100">
+              <input type="text" [(ngModel)]="put.profile.city" #city="ngModel" name="city" class="form-control" aria-describedby="Enter city" placeholder="Enter City" required>
+              <label class="text-danger" *ngIf="f.submitted && !city.valid">City is required.</label>
+            </div>
+          </div>
+          <div class="d-flex justify-content-between required">
+            <!--<div class="form-group">-->
+              <!--<input type="text" [(ngModel)]="put.profile.state" #state="ngModel" name="state" class="form-control" aria-describedby="state" placeholder="State" required>-->
+              <!--<label class="text-danger" *ngIf="f.submitted && !state.valid">State is required.</label>-->
+            <!--</div>-->
+            <div class="form-group">
+              <input type="text" [(ngModel)]="put.profile.region" #region="ngModel" name="region" class="form-control" aria-describedby="Enter region" placeholder="Enter Region">
+              <!--<label class="text-danger" *ngIf="f.submitted && !region.valid">Region is required.</label>-->
+            </div>
+            <div class="form-group pr-2 pl-2">
+              <input type="text" [(ngModel)]="put.profile.postal_code" #postal_code="ngModel" name="postal_code" class="form-control" aria-describedby="postal_code" placeholder="Enter Postal Code" required>
+              <label class="text-danger" *ngIf="f.submitted && !postal_code.valid">Zip is required.</label>
+            </div>
+            <div class="form-group">
+              <app-custom-typeahead
+                [z]="100"
+                [inputClass]="'form-control'"
+                [customType]="'text'"
+                [(ngModel)]="put.profile.country"
+                [ngModelOptions]="{standalone: true}"
+                required
+                [fixUI]="true"
+                [customPlaceholder]="'Select Country'"
+                [customTypeaheadMinLength]="0"
+                [customTypeahead]="countryList | nameAndCode"
+                [customTypeaheadOptionField]="'name'">
+              </app-custom-typeahead>
+              <label class="text-danger" *ngIf="f.submitted && put.profile.country === 'Country'">Country is required.</label>
+            </div>
+          </div>
+
+          <div class="d-flex">
+            <div class="form-group w-100">
+              <app-custom-typeahead
+                [z]="99"
+                [inputClass]="'form-control'"
+                [customType]="'text'"
+                [(ngModel)]="put.profile.industry"
+                [ngModelOptions]="{standalone: true}"
+                required
+                [fixUI]="true"
+                customPlaceholder="Select Industry"
+                [customTypeaheadMinLength]="0"
+                [customTypeahead]="industries">
+              </app-custom-typeahead>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <div class="form-group w-50 pr-2">
+              <input type="number" [(ngModel)]="put.profile.monthly_transactions" #monthly_transactions="ngModel" name="monthly_transactions" class="form-control" aria-describedby="Enter transactions" placeholder="Enter Transactions">
+            </div>
+            <div class="form-group w-50">
+              <app-custom-typeahead
+                [z]="98"
+                [inputClass]="'form-control'"
+                [customType]="'text'"
+                [(ngModel)]="put.profile.employees"
+                [ngModelOptions]="{standalone: true}"
+                required
+                [fixUI]="true"
+                customPlaceholder="Select Employee Count"
+                [customTypeaheadMinLength]="0"
+                [customTypeahead]="employeeRanges">
+              </app-custom-typeahead>
+            </div>
+          </div>
+
+          <app-custom-typeahead
+            [z]="2"
+            [inputClass]="'form-control'"
+            [customType]="'text'"
+            [(ngModel)]="put.profile.timezone"
+            [ngModelOptions]="{standalone: true}"
+            required
+            [fixUI]="true"
+            [customPlaceholder]="'Select Time Zone'"
+            [customTypeaheadMinLength]="0"
+            [customTypeahead]="timezones"
+            [typeaheadGroupField]="'group'"
+            [customTypeaheadOptionField]="'value'">
+          </app-custom-typeahead>
+
+          <app-fa-save-btn
+            class="mb-4 bottom d-flex justify-content-end"
+            saveButtonName="create account"
+            [saveButtonBlock]="true"
+            [customHeight]="true"
+            heightValue="45px"
+            [isLoading]="loading"
+            [setDisable]="!f.form.valid"
+            (onSave)="tellUsMore()">
+          </app-fa-save-btn>
+        </form>
+      </div>
+    </article>
+  </div>
+
+  <!--Confirmation page-->
+  <div class="signup animated fadeInDown" *ngIf="registerStep === CONFIRMATION">
+    <article class="form-wrapper d-flex flex-column align-items-center">
+      <div class="d-flex align-items-center flex-column col-4">
+        <img class="mb-5" [src]="logoURL"/>
+        <img class="mb-4 w-50" [src]="cardURL">
+      </div>
+      <div class="d-flex flex-column col-8 text-center">
+        <h1 class="mb-10">Well Done!</h1>
+        <p class="text-gray-dark" [innerHTML]="confirmationMsg"></p>
+      </div>
+    </article>
+  </div>
+
+</section>
