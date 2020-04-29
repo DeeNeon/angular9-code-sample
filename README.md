@@ -1,2 +1,3 @@
-# angular9-code-sample
-simple code sample
+## Disclaimer
+
+This is real code from a live project I worked on, although sensitive code blocks have been taken away due to NDA.
